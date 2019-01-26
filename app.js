@@ -4,6 +4,7 @@ const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
 const express      = require('express');
 const favicon      = require('serve-favicon');
+const cors         = require('cors')
 const hbs          = require('hbs');
 const mongoose     = require('mongoose');
 const logger       = require('morgan');
@@ -49,6 +50,10 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 // default value for title local
 app.locals.title = 'Mike Industries Api';
 
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:3000','http://localhost:3001']
+}))
 
 
 const index = require('./routes/index');
