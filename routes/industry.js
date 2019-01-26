@@ -1,42 +1,59 @@
 const express = require('express');
 const Industry = require('../models/Industry');
 const router = express.Router();
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
+const privateKEY = fs.readFileSync(__dirname + '/private.key', 'utf8');
+const publicKEY = fs.readFileSync(__dirname + '/public.key', 'utf8');
 /**
  *  * Industry Endpoints
  */
-router.post('/industry', (req, res, next) => {
-  Industry.create(req.body)
-    .then(response => res.json(response))
-    .catch(e => res.json(e))
+router.post('/upload', (req, res, next) => {
+  const token = req.headers.authorization
+  const verifyOptions = {
+    expiresIn: "12h",
+    algorithm: "RS256"
+  };
+  let legit = jwt.verify(token, publicKEY, verifyOptions);
+  if (legit.codeBy === "AsterDecember") {
+    Industry.create(req.body)
+      .then(response => res.status(201).json(response))
+      .catch(e => res.json(e))
+  }else res.status(403).json({"message":"You must get a token"}) 
 })
 
-router.get('/industry', (req, res, next) => {
-  Industry.find()
-    .then(response => res.json(response))
+router.get('/', (req, res, next) => {
+  const token = req.headers.authorization
+  const verifyOptions = {
+    expiresIn: "12h",
+    algorithm: "RS256"
+  };
+  let legit = jwt.verify(token, publicKEY, verifyOptions);
+  if (legit.codeBy === "AsterDecember") {
+    Industry.find()
+    .then(response => res.status(200).json(response))
     .catch(e => res.json(e))
+  }else res.status(403).json({"message":"You must get a token"}) 
+
 })
 
-router.get('/industry/:id', (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   const { id } = req.params
-  Industry.findById(id)
-    .then(response => res.json(response))
+  const token = req.headers.authorization
+  const verifyOptions = {
+    expiresIn: "12h",
+    algorithm: "RS256"
+  };
+  let legit = jwt.verify(token, publicKEY, verifyOptions);
+  if (legit.codeBy === "AsterDecember") {
+    Industry.findById(id)
+    .then(response => res.status(200).json(response))
     .catch(e => res.json(e))
+  }else res.status(403).json({"message":"You must get a token"}) 
+
 })
 
-router.put('/industry/:id', (req, res, next) => {
-  const { id } = req.params
-  Industry.findByIdAndUpdate(id, { $set: req.body })
-    .then(response => res.json({ message: "industry update" }))
-    .catch(e => res.json(e))
-})
-
-router.delete('/books/:id', (req, res, next) => {
-  const { id } = req.params
-  Industry.findByIdAndRemove(id)
-    .then(response => res.json({ message: "Libro eliminado" }))
-    .catch(e => res.json(e))
-})
 
 
 module.exports = router;

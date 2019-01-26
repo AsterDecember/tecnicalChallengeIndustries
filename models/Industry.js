@@ -6,14 +6,9 @@ const industrySchema = new Schema({
         type: String,
         unique: true
     },
-        name: String,
-    children:
-    {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }
-    ,
-},
+    name: String,
+    children: [],
+    },
     {
         timestamps: {
             createdAt: true,
